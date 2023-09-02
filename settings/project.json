@@ -7,7 +7,7 @@
     "right corner",
     "left corner",
     "item",
-    "player item",
+    "player booster",
     "booster"
   ],
   "collision-matrix": [
@@ -28,7 +28,9 @@
       true,
       null,
       null,
-      true
+      true,
+      null,
+      false
     ],
     [
       true,

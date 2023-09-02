@@ -18,6 +18,9 @@ export default class Item extends PoolMember{
         if (!this.isEquip)
             SimplePool.despawn(this);   
         // console.log("xoa item");
+    }
+
+    public enableAnim(): void{
         
     }
 }

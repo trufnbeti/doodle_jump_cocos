@@ -15,8 +15,8 @@ export default class Trampoline extends Item{
     protected onCollisionStay(other: cc.Collider, self: cc.Collider): void{
         // super.onCollisionEnter(other, self);
         if (other.node.group == 'player'){
-            GameManager.Ins.player.equipBooster(this)
             if (GameManager.Ins.player.isFalling()){
+                // GameManager.Ins.player.equipBooster(this)
                 GameManager.Ins.player.getTrampoline();
                 GameManager.Ins.player.jump();
                 this.anim.play();

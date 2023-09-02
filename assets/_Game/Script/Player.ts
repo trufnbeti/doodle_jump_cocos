@@ -3,6 +3,7 @@ import Item from "./Item/Item";
 import GameManager from "./Manager/GameManager";
 import UIManager from "./Manager/UIManager";
 import PoolMember from "./Pool/PoolMember";
+import SimplePool from "./Pool/SimplePool";
 
 const {ccclass, property} = cc._decorator;
 
@@ -23,6 +24,8 @@ export default class Player extends PoolMember {
     @property(Boosters) private boosters: Boosters[] = [];
     private boosterMap: Map<PoolType, cc.Node> = new Map<PoolType, cc.Node>;
     private booster: Item;
+    private isBooster: boolean = false;
+
 
     @property(cc.RigidBody) private rb: cc.RigidBody;
 
@@ -50,9 +53,14 @@ export default class Player extends PoolMember {
     }
 
     public equipBooster(booster: Item): void{
-        this.booster.node.setParent(this.boosterMap.get(PoolType.Trampoline))
-        this.booster = booster;
-        this.booster.node.setWorldPosition(this.boosterMap.get(PoolType.Trampoline).getWorldPosition());
+        if (this.isBooster) return;
+        this.isBooster = true;
+        const spawnPos: cc.Node = this.boosterMap.get(booster.poolType);
+        this.booster = SimplePool.spawnT<Item>(booster.poolType, spawnPos.getWorldPosition(), 0);
+        this.booster.isEquip = true;
+        this.booster.node.setParent(this.boosterMap.get(PoolType.Jetpack))
+        this.booster.node.setWorldPosition(spawnPos.getWorldPosition());
+        this.booster.enableAnim();
     }
 
     public onReset(): void{
