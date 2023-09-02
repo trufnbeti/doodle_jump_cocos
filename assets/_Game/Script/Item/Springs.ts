@@ -9,11 +9,6 @@ export default class Springs extends Item{
     @property(cc.Animation)
     private anim: cc.Animation;
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
-        this.onCollisionStay(other, self);
-        
-    }
-    protected onCollisionStay(other: cc.Collider, self: cc.Collider): void{
-        // super.onCollisionEnter(other, self);
         if (other.node.group == 'player'){
             if (GameManager.Ins.player.isFalling()){
                 GameManager.Ins.player.getSprings();
@@ -21,5 +16,6 @@ export default class Springs extends Item{
                 this.anim.play();
             }            
         }
+        
     }
 }
