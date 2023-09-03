@@ -1,5 +1,6 @@
 import { Boosters, GameState, PoolType } from "./DataStruct";
 import Item from "./Item/Item";
+import Jetpack from "./Item/Jetpack";
 import GameManager from "./Manager/GameManager";
 import UIManager from "./Manager/UIManager";
 import PoolMember from "./Pool/PoolMember";
@@ -22,15 +23,15 @@ export default class Player extends PoolMember {
     private isSpringShoes: boolean = false;
 
     @property(Boosters) private boosters: Boosters[] = [];
+    @property(cc.Node) private jetpack: cc.Node;
     private boosterMap: Map<PoolType, cc.Node> = new Map<PoolType, cc.Node>;
     private booster: Item;
-    private isBooster: boolean = false;
+    private isEquipBooster: boolean = false;
+    private isBoosting: boolean = false;
 
 
     @property(cc.RigidBody) private rb: cc.RigidBody;
-
-    @property(cc.Node)  private jetpack: cc.Node;
-
+    
     //giới hạn khu vực điều khiển
 	private screen: cc.Vec2;
 	private clampHorizon: cc.Vec2; // = new cc.Vec2(-0.5, 0.5).mul(this.screen.x);
@@ -53,19 +54,17 @@ export default class Player extends PoolMember {
     }
 
     public equipBooster(booster: Item): void{
-        if (this.isBooster) return;
-        this.isBooster = true;
-        const spawnPos: cc.Node = this.boosterMap.get(booster.poolType);
-        this.booster = SimplePool.spawnT<Item>(booster.poolType, spawnPos.getWorldPosition(), 0);
-        this.booster.isEquip = true;
-        this.booster.node.setParent(this.boosterMap.get(PoolType.Jetpack))
-        this.booster.node.setWorldPosition(spawnPos.getWorldPosition());
-        this.booster.enableAnim();
+        if (this.isEquipBooster) return;
+        // booster.isEquip = true;
+        SimplePool.despawn(booster);
+        this.isEquipBooster = true;
+        this.jetpack.active = true;
     }
 
     public onReset(): void{
         this.node.x = 0;
         this.node.y = -550;
+        this.isEquipBooster = false;
         this.rb.linearVelocity = cc.Vec2.ZERO;
         this.isSprings = false;
         this.isTrampoline = false;
@@ -73,6 +72,7 @@ export default class Player extends PoolMember {
         // this.jetpack.active = false;
         this.direction = 0;
         this.node.active = true;
+        this.booster = null;
     }
 
     onKeyPressed(event: KeyboardEvent): void{
@@ -142,8 +142,29 @@ export default class Player extends PoolMember {
     public isFalling(): boolean{
         return this.rb.linearVelocity.y <= 0;
     }
+
+    private dropBooster(): void{
+        // SimplePool.despawn(this.booster);
+        this.jetpack.active = false;
+    }
     protected update(dt: number): void {
         this.move(dt);
+        if (this.isEquipBooster){
+            if (!this.isBoosting){
+                this.rb.gravityScale = 0;
+                this.rb.linearVelocity = cc.v2(0, this.jumpForce * 1.5);
+                this.isBoosting = true;
+            }else{
+                this.scheduleOnce(() => {
+                    this.isEquipBooster = false;
+                    this.isBoosting = false;
+                    this.rb.gravityScale = 8;
+                    this.dropBooster()
+                }, 3.5);
+            }
+        }
+        
+        
     }
     
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
