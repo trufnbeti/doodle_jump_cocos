@@ -56,6 +56,7 @@ export default class GameManager extends cc.Component {
 
     public onReset(): void{
         this.state = GameState.Starting;
+        this.m_score = 0;
         SimplePool.collectAll();
         UIManager.Ins.closeAll();
         this.player.onReset();

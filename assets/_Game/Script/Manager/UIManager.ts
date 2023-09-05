@@ -2,6 +2,7 @@ import { GameState } from "../DataStruct";
 import Pref from "../Pref";
 import GameManager from "./GameManager";
 import PhysicManager from "./PhysicManager";
+import SoundManager from "./SoundManager";
 
 const {ccclass, property} = cc._decorator;
  
@@ -67,6 +68,7 @@ export default class UIManager extends cc.Component{
     }
     private onBtnPauseClick(): void{
         this.onOpen(0);
+        SoundManager.Ins.PauseAllSound();
         cc.director.pause();
     }
     

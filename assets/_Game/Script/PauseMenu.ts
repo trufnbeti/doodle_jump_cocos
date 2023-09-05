@@ -1,3 +1,4 @@
+import SoundManager from "./Manager/SoundManager";
 import UIManager from "./Manager/UIManager";
 
 const {ccclass, property} = cc._decorator;
@@ -9,6 +10,7 @@ export default class PauseMenu extends cc.Component{
     private onBtnResumeClick(): void{
         UIManager.Ins.onClose(0);
         if (cc.director.isPaused()){
+            SoundManager.Ins.ResumeAllSound();
             cc.director.resume();
         }
     }

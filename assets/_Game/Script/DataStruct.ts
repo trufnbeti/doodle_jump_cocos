@@ -19,6 +19,16 @@ export enum PoolType {
     Springs = 4,
     Trampoline = 5,
     Jetpack = 6,
+    Propeller = 7,
+}
+
+export enum AudioType{
+    None,
+    Jump,
+    Springs,
+    Trampoline,
+    Propeller,
+    Jetpack,
 }
 
 export enum PrefKey{
@@ -54,4 +64,10 @@ export class Boosters{
     @property(cc.Node) public node: cc.Node;
     @property({ type: cc.Enum(PoolType) })
     public poolType: PoolType = PoolType.None;
+}
+
+@ccclass
+export class Sounds{
+    @property({ type: cc.Enum(AudioType) }) public audioType: AudioType = AudioType.None;
+    @property(cc.AudioClip) public audio: cc.AudioClip;
 }

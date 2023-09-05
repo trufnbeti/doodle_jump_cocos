@@ -7,7 +7,6 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class Jetpack extends Item {
 
-    @property(cc.Animation) private anim: cc.Animation;
     @property(cc.Float) private fallSpeed: number= 0.1;
     private canFalling: boolean = false;
 
@@ -21,10 +20,6 @@ export default class Jetpack extends Item {
 
     public drop(): void{
                
-    }
-
-    public enableAnim(): void{
-        this.anim.play();
     }
 
     update (dt: number) {

@@ -17,10 +17,6 @@ export default class Item extends PoolMember{
             SimplePool.despawn(this);   
     }
 
-    public enableAnim(): void{
-        
-    }
-
     public drop(): void{
         
     }
