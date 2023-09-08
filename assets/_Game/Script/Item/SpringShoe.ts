@@ -5,17 +5,13 @@ import Item from "./Item";
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Springs extends Item{
-    @property(cc.Animation)
-    private anim: cc.Animation;
+export default class SpringShoe extends Item{
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
         if (other.node.group == 'player'){
             if (GameManager.Ins.player.isFalling()){
-                GameManager.Ins.player.getSprings();
+                GameManager.Ins.player.getSpringShoes();
                 GameManager.Ins.player.jump();
-                this.anim.play();
             }            
         }
-        
     }
 }

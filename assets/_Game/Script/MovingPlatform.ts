@@ -23,7 +23,7 @@ export default class MovingPlatform extends Platform {
 
     protected onLoad(): void {
 
-        this.moveSpeed = Utilities.random(750, 900);
+        this.moveSpeed = Utilities.random(1000, 1200);
 
         this.screen = new cc.Vec2(
 			cc.view.getVisibleSize().width,

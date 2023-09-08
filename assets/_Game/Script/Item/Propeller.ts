@@ -11,7 +11,7 @@ export default class Propeller extends Item {
 
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
         // super.onCollisionEnter(other, self);
-        if (other.node.group == 'player booster'){
+        if (other.node.group == 'player box'){
             GameManager.Ins.player.equipBooster(this);
         }
         

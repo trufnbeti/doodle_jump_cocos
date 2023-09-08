@@ -1,6 +1,7 @@
-import Items, { GameState, Platforms, PoolType, PrefKey } from "../DataStruct";
+import Items, { Monsters, GameState, Platforms, PoolType, PrefKey } from "../DataStruct";
+import Monster from "../Monster";
 import Item from "../Item/Item";
-import Springs from "../Item/Springs";
+import Springs from "../Item/Spring";
 import Platform from "../Platform";
 import Player from "../Player";
 import SimplePool from "../Pool/SimplePool";
@@ -48,7 +49,9 @@ export default class GameManager extends cc.Component {
     @property(cc.Float) private startingPlatform: number = 15;
     @property(Platforms)    public platformsPrefab: Platforms[] = [];
     @property(cc.Float) private itemsSpawnRate: number = 0.05;
-    @property(Items)    private items: Items[] = []; 
+    @property(Items)    private items: Items[] = [];
+    @property(cc.Float) private monstersSpawnRate: number = 0.01;
+    @property(Monsters)  private monsters: Monsters[] = [];
 
     private isDoubleBreakablePlatform: boolean = false;
 
@@ -104,7 +107,6 @@ export default class GameManager extends cc.Component {
 
         if (this.isDoubleBreakablePlatform && type == PoolType.BreakablePlatform){
             console.log("huy tao cai moi vi co 3 platform breakable");
-            
             this.spawnPlatform();
             return;
         }
@@ -130,21 +132,45 @@ export default class GameManager extends cc.Component {
         Pref.setHighScore(this.m_score);
     }
 
-    public spawnItem(node: cc.Node): Item{
+    public spawnItem(spawnNode: cc.Node): Item{
         if (this.items.length == 0 || this.state != GameState.Playing)  return;
-        const randIdx: number = Utilities.randomInt(0, this.items.length - 1);
-        const itemRand: Items = this.items[randIdx];        
-        
-        const rate = this.itemsSpawnRate * this.items[randIdx].spawnRate * this.items.length;
-        
-        let randCheck: number = Utilities.random(0, 1);
-        
-        let item = SimplePool.spawnT<Item>(itemRand.poolType, cc.Vec3.ZERO, 0);
-        item.node.setParent(node.parent);
-        item.node.setWorldPosition(node.getWorldPosition());
-        item.node.active = (randCheck < rate);
+        const randItemRate: number = Utilities.random(0, 1);
+        let res: Item = null;
+        if (randItemRate < this.itemsSpawnRate){
+            const randCheck: number = Utilities.random(0, 1);
+            let type: number = 0;
+            let sumRate: number = 0;
+            this.items.forEach(item => {
+                sumRate += item.spawnRate;
+                
+                if (randCheck < sumRate && type == 0){
+                    type = item.poolType;
+                }
+            });
+            res = SimplePool.spawnT<Item>(type, cc.Vec3.ZERO, 0);
+            res.node.setParent(spawnNode.parent);
+            res.node.setWorldPosition(spawnNode.getWorldPosition());
+        }
+        return res;
+    }
 
-        return item;
+    public spawnMonster(spawnNode: cc.Node): Monster{
+        if (this.monsters.length == 0 || this.state != GameState.Playing)    return;
+        const randMonsterRate: number = Utilities.random(0, 1);
+        let res: Monster = null;
+        if (randMonsterRate < this.monstersSpawnRate && this.m_score > 1000){
+            const randCheck: number = Utilities.random(0, 1);
+            let type: number = 0;
+            let sumRate: number = 0;
+            this.monsters.forEach(monster => {
+                sumRate += monster.spawnRate;
+                if (randCheck < sumRate && type == 0){
+                    type = monster.poolType;
+                }
+            });
+            res = SimplePool.spawnT<Monster>(type, spawnNode.getWorldPosition(), 0);
+        }
+        return res;
     }
 
 }

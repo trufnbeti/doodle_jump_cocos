@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "10fb26b0-c76c-43fc-9766-d2b1fe1b2249",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 53,
+  "height": 23,
+  "platformSettings": {},
+  "subMetas": {
+    "SpringShoe02": {
+      "ver": "1.0.4",
+      "uuid": "e41808b7-f1b7-4702-863a-9c1c4bafc918",
+      "rawTextureUuid": "10fb26b0-c76c-43fc-9766-d2b1fe1b2249",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 53,
+      "height": 23,
+      "rawWidth": 53,
+      "rawHeight": 23,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

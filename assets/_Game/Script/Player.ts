@@ -22,9 +22,13 @@ export default class Player extends PoolMember {
     private isSprings: boolean = false;
     private isTrampoline: boolean = false;
     private isSpringShoes: boolean = false;
+    private isJumpOnMonster: boolean = false;
+    @property(cc.BoxCollider) private boxCol: cc.BoxCollider;
 
     @property(cc.Node) private jetpack: cc.Node;
     @property(cc.Node) private propeller: cc.Node;
+    @property(cc.Node) private springShoes: cc.Node;
+    @property(cc.Node) private stars: cc.Node;
     private typeBoost: PoolType;
     private isEquipBooster: boolean = false;
     private isBoosting: boolean = false;
@@ -51,19 +55,17 @@ export default class Player extends PoolMember {
     }
 
     public equipBooster(booster: Item): void{
-        if (this.isEquipBooster) return;
+        if (this.isEquipBooster || this.isSpringShoes) return;
         this.typeBoost = booster.poolType;
         SimplePool.despawn(booster);
         this.isEquipBooster = true;
         switch (this.typeBoost){
             case PoolType.Jetpack:
                 this.jetpack.active = true;
-                console.log("jetpack: " + this.jetpack.active);
                 SoundManager.Ins.PlayClip(AudioType.Jetpack);
                 break;
             case PoolType.Propeller:
-                this.propeller.active = true;
-                console.log("propleler: " + this.propeller.active);                
+                this.propeller.active = true;               
                 SoundManager.Ins.PlayClip(AudioType.Propeller);
                 break;
         }
@@ -74,12 +76,20 @@ export default class Player extends PoolMember {
         this.node.x = 0;
         this.node.y = -550;
         this.isEquipBooster = false;
+        this.isBoosting = false;
+        this.isSpringShoes = false;
         this.rb.linearVelocity = cc.Vec2.ZERO;
         this.isSprings = false;
         this.isTrampoline = false;
         this.jumpTemp = this.jumpForce;
-        // this.jetpack.active = false;
+        this.jetpack.active = false;
+        this.propeller.active = false;
+        this.springShoes.active = false;
+        this.stars.active = false;
         this.direction = 0;
+        this.rb.gravityScale = 8;
+        this.anim.stop();
+        this.boxCol.enabled = true;
         this.node.active = true;
     }
 
@@ -118,12 +128,10 @@ export default class Player extends PoolMember {
         if (this.isEquipBooster)    return;
         this.jumpTemp = this.jumpForce;
         if (this.isSprings){
-            SoundManager.Ins.PlayClip(AudioType.Springs);
             this.jumpTemp *= 2;
             this.isSprings = false;
         }
         if (this.isTrampoline){
-            SoundManager.Ins.PlayClip(AudioType.Trampoline);
             this.jumpTemp *= 2;
             this.node.angle = 0;
             this.node.anchorY = 0.5;
@@ -135,20 +143,44 @@ export default class Player extends PoolMember {
             this.isTrampoline = false;
             this.node.anchorY = 0;
         }
+        if (this.isJumpOnMonster){
+            this.jumpTemp *= 1.5;
+            this.isJumpOnMonster = false;
+        }
+        if (this.isSpringShoes){
+            this.jumpTemp *= 2;
+        }
         if (GameManager.Ins.state == GameState.Playing){
-            SoundManager.Ins.PlayClip(AudioType.Jump);
-            this.anim.play();
+            if (this.isSpringShoes){
+                SoundManager.Ins.PlayClip(AudioType.SpringShoes);
+                this.anim.play('SpringShoes');
+            }else{
+                SoundManager.Ins.PlayClip(AudioType.Jump);
+                this.anim.play();
+            }
         }
         this.rb.linearVelocity = cc.v2(0, this.jumpTemp);       
     }
     public getSprings(): void{
+        if (this.isSpringShoes) return;
         this.isSprings = true;
     }
     public getTrampoline(): void{
+        if (this.isSpringShoes) return;
         this.isTrampoline = true;
     }
     public getSpringShoes(): void{
+        if (this.isSpringShoes) return;
         this.isSpringShoes = true;
+        this.springShoes.active = true;
+        this.scheduleOnce(() => {
+            this.isSpringShoes = false;
+            this.springShoes.active = false;
+        }, 10);
+    }
+
+    public jumpOnMonster(): void{
+        this.isJumpOnMonster = true;
     }
     public isFalling(): boolean{
         return this.rb.linearVelocity.y <= 0;
@@ -176,36 +208,32 @@ export default class Player extends PoolMember {
     }
     protected update(dt: number): void {
         this.move(dt);
-        // if (this.isEquipBooster){
-        //     if (!this.isBoosting){
-        //         this.rb.gravityScale = 0;
-        //         this.rb.linearVelocity = cc.v2(0, this.jumpForce * 1);
-        //         this.isBoosting = true;
-        //     }else{
-        //         this.scheduleOnce(() => {
-        //             this.isEquipBooster = false;
-        //             this.isBoosting = false;
-        //             this.rb.gravityScale = 8;
-        //             this.dropBooster();
-        //         }, 3);
-        //     }
-        // }
-        
-        
     }
     
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
         if (other.node.group == 'dead zone'){
             this.onDeath();                 
         }
-        // console.log("hiohihihihi");
     }
 
-    onDeath(): void{
-        console.log("Chet");
+    public onHit(): void{
+        if (GameManager.Ins.state != GameState.Playing || this.isBoosting) return;
+        this.rb.linearVelocity = cc.v2(0, 0);
+        this.boxCol.enabled = false;
+        this.stars.active = true;
+        SoundManager.Ins.PlayClip(AudioType.MonsterHit);
+        this.scheduleOnce(() => {
+            this.onDeath();
+        }, 0.5);
+    }
+
+    public onDeath(): void{
         GameManager.Ins.state = GameState.GameOver;
-        UIManager.Ins.onOpen(1);
-        cc.director.pause();
+        SoundManager.Ins.PlayClip(AudioType.Falling);
+        this.scheduleOnce(() => {
+            UIManager.Ins.onOpen(1);
+            cc.director.pause();
+        }, 1)
     }
 
 }

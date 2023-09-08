@@ -1,3 +1,4 @@
+import Monster from "./Monster";
 import Item from "./Item/Item";
 import GameManager from "./Manager/GameManager";
 import PoolMember from "./Pool/PoolMember";
@@ -11,12 +12,23 @@ export default class Platform extends PoolMember{
 
     @property(cc.Node)
     private spawnNodeList: cc.Node[] = [];
-    public item: Item;
+    private item: Item;
+    private monster: Monster;
 
     public loadItem(): void {
-        // if ()
-        let ranIdx: number = Utilities.randomInt(0, this.spawnNodeList.length - 1);
+        const ranIdx: number = Utilities.randomInt(0, this.spawnNodeList.length - 1);
         this.item = GameManager.Ins.spawnItem(this.spawnNodeList[ranIdx]);
+        if (this.item == null){
+            this.monster = GameManager.Ins.spawnMonster(this.spawnNodeList[ranIdx]);
+            // if (this.monster != null){
+            //     GameManager.Ins.spawnPlatform();
+            //     SimplePool.despawn(this);
+            // }
+        }           
+    }
+
+    public onReset(): void {
+        this.item = null;
     }
 
     private m_id: number = 0;
@@ -44,9 +56,9 @@ export default class Platform extends PoolMember{
         }
     }
     onDeath(): void{
-        SimplePool.despawn(this);
-        if (this.m_id != 0){
+        if (this.m_id != 0 && this.item != null){
             this.item.onDeath();
         }  
+        SimplePool.despawn(this);
     }
 }
