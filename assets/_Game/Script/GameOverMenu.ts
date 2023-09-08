@@ -7,6 +7,7 @@ const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class GameOverMenu extends cc.Component{
+    @property(cc.Node) private bg: cc.Node;
 
     @property(cc.Label)
     private score: cc.Label;
@@ -21,8 +22,6 @@ export default class GameOverMenu extends cc.Component{
         this.namePLayer.string = Pref.getPlayerName();
     }
 
-    update
-    
     private onBtnPlayagainCLick(): void{
         UIManager.Ins.ReplayGame();
     }

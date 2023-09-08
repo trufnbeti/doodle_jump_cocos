@@ -230,8 +230,10 @@ export default class Player extends PoolMember {
     public onDeath(): void{
         GameManager.Ins.state = GameState.GameOver;
         SoundManager.Ins.PlayClip(AudioType.Falling);
+        console.log("cHET");
+        
         this.scheduleOnce(() => {
-            UIManager.Ins.onOpen(1);
+            // UIManager.Ins.onOpen(1);
             cc.director.pause();
         }, 1)
     }

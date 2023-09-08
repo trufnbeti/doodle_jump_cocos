@@ -55,7 +55,7 @@ export default class Platform extends PoolMember{
             GameManager.Ins.player.jump();
         }
     }
-    onDeath(): void{
+    protected onDeath(): void{
         if (this.m_id != 0 && this.item != null){
             this.item.onDeath();
         }  

@@ -13,6 +13,9 @@ export default class BreakablePlatform extends Platform{
                 this.anim.play();
             }
         }
+        if (other.node.group == 'dead zone'){
+            this.onDeath();
+        }
     }
     onCompleteAnim(param: boolean){
         if (param){
