@@ -42,6 +42,7 @@ export enum AudioType {
 export enum PrefKey {
   BestScore = "BestScore",
   PlayerName = "PlayerName",
+  HighestPos = "HighestPos",
 }
 
 const { ccclass, property } = cc._decorator;

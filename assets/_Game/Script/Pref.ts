@@ -29,4 +29,22 @@ export default class Pref{
 
         return currentName ? currentName : "";
     }
+
+    public static setHighestPos(value: number): void{
+        let currentValue: number = cc.sys.localStorage.getItem(PrefKey.HighestPos);
+
+        if (!currentValue){
+            currentValue = 0;
+        }
+
+        if (value > currentValue){
+            cc.sys.localStorage.setItem(PrefKey.HighestPos, value);
+        }
+    }
+
+    public static getHighestPos(): number{
+        const currentValue: number = cc.sys.localStorage.getItem(PrefKey.HighestPos);
+        return currentValue ? currentValue : 0;
+    }
+    
 }

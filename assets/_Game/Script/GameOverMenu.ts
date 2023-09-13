@@ -7,7 +7,6 @@ const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class GameOverMenu extends cc.Component{
-    @property(cc.Node) private bg: cc.Node;
 
     @property(cc.Label)
     private score: cc.Label;
@@ -16,7 +15,7 @@ export default class GameOverMenu extends cc.Component{
     @property(cc.EditBox)
     private namePLayer: cc.EditBox;
 
-    protected onEnable(): void {
+    protected update(): void {
         this.score.string = `your score: ${GameManager.Ins.Score()}`;
         this.highScore.string = `your high score: ${Pref.getHighScore()}`;
         this.namePLayer.string = Pref.getPlayerName();
@@ -34,8 +33,6 @@ export default class GameOverMenu extends cc.Component{
     }
 
     private getPlayerName(): void{
-        Pref.setPlayerName(this.namePLayer.string);
-        console.log(Pref.getPlayerName());
-        
+        Pref.setPlayerName(this.namePLayer.textLabel.string);
     }
 }

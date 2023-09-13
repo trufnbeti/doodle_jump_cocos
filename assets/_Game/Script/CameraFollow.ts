@@ -15,8 +15,14 @@ export default class CameraFollow extends cc.Component{
         if (targetPos.y <= currentPos.y && GameManager.Ins.state != GameState.GameOver) return;
         if (this.node.getWorldPosition().y <= this.gameOver.getWorldPosition().y){
             this.node.setWorldPosition(this.gameOver.getWorldPosition());
+            // cc.director.pause();
             return;
         }
+        // if (this.player.getWorldPosition().y + this.player.height <= this.gameOver.getBoundingBoxToWorld().y){
+        //     cc.director.pause();
+            
+        //     return;
+        // }
 
         currentPos.lerp(targetPos, 0.1, currentPos);
         this.node.setPosition(currentPos);

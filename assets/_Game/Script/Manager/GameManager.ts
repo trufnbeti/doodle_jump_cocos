@@ -29,6 +29,7 @@ export default class GameManager extends cc.Component {
     }
     private screen: cc.Vec2;
     private clampHorizon: cc.Vec2; // = new cc.Vec2(-0.5, 0.5).mul(this.screen.x);
+    private clampVertical: cc.Vec2;
 
     protected onLoad(): void {
         GameManager.ins = this;        
@@ -38,6 +39,13 @@ export default class GameManager extends cc.Component {
 			cc.view.getVisibleSize().height
 		);
 		this.clampHorizon = new cc.Vec2(-0.5, 0.5).mul(this.screen.x);
+		this.clampVertical = new cc.Vec2(-0.5, 0.5).mul(this.screen.y);
+        this.record.x = this.clampHorizon.y;
+
+        if (Pref.getHighestPos() != 0){
+            this.record.active = true;
+            this.record.y = Pref.getHighestPos();
+        }
 
     
     }
@@ -52,6 +60,8 @@ export default class GameManager extends cc.Component {
     @property(Items)    private items: Items[] = [];
     @property(cc.Float) private monstersSpawnRate: number = 0.01;
     @property(Monsters)  private monsters: Monsters[] = [];
+
+    @property(cc.Node) private record: cc.Node;
 
     private isDoubleBreakablePlatform: boolean = false;
 
@@ -73,6 +83,10 @@ export default class GameManager extends cc.Component {
         UIManager.Ins.updateScore(0);
              
         this.camera.y = 0;
+        if (Pref.getHighestPos() != 0){
+            this.record.active = true;
+            this.record.y = Pref.getHighestPos();
+        }
 
         this.ivkPlatform();
     }
@@ -171,6 +185,17 @@ export default class GameManager extends cc.Component {
             res = SimplePool.spawnT<Monster>(type, spawnNode.getWorldPosition(), 0);
         }
         return res;
+    }
+
+    protected update(dt: number): void {
+        if (this.state == GameState.Playing){
+            Pref.setHighestPos(this.player.node.y); 
+            // console.log(Pref.getHighestPos());
+            // console.log(this.record.y);            
+        }
+        if (this.record.y < this.camera.y + this.clampVertical.x){
+            this.record.active = false;
+        }
     }
 
 }

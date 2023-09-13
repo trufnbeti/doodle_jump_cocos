@@ -653,7 +653,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "37760509-609f-44e4-92ef-ce52df0ff308"
+      "__uuid__": "9042e98f-56fb-44c3-b72e-d3ace34c2f3f"
     },
     "_type": 1,
     "_sizeMode": 0,
@@ -771,22 +771,22 @@
       "a": 200
     },
     "_N$normalSprite": {
-      "__uuid__": "37760509-609f-44e4-92ef-ce52df0ff308"
+      "__uuid__": "9042e98f-56fb-44c3-b72e-d3ace34c2f3f"
     },
     "_N$pressedSprite": {
-      "__uuid__": "5b60f6aa-7f9b-4f74-a10a-979a6d5fe23a"
+      "__uuid__": "dc4caaa9-949b-40d4-95c1-12324e15c0c5"
     },
     "pressedSprite": {
-      "__uuid__": "5b60f6aa-7f9b-4f74-a10a-979a6d5fe23a"
+      "__uuid__": "dc4caaa9-949b-40d4-95c1-12324e15c0c5"
     },
     "_N$hoverSprite": {
-      "__uuid__": "37760509-609f-44e4-92ef-ce52df0ff308"
+      "__uuid__": "9042e98f-56fb-44c3-b72e-d3ace34c2f3f"
     },
     "hoverSprite": {
-      "__uuid__": "37760509-609f-44e4-92ef-ce52df0ff308"
+      "__uuid__": "9042e98f-56fb-44c3-b72e-d3ace34c2f3f"
     },
     "_N$disabledSprite": {
-      "__uuid__": "37760509-609f-44e4-92ef-ce52df0ff308"
+      "__uuid__": "9042e98f-56fb-44c3-b72e-d3ace34c2f3f"
     },
     "_N$target": {
       "__id__": 14

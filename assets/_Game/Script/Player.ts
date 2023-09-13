@@ -232,10 +232,10 @@ export default class Player extends PoolMember {
         SoundManager.Ins.PlayClip(AudioType.Falling);
         console.log("cHET");
         
-        this.scheduleOnce(() => {
-            // UIManager.Ins.onOpen(1);
-            cc.director.pause();
-        }, 1)
+        // this.scheduleOnce(() => {
+        //     // UIManager.Ins.onOpen(1);
+        //     cc.director.pause();
+        // }, 1)
     }
 
 }
