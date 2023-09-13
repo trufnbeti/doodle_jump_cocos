@@ -24,6 +24,8 @@ export enum PoolType {
   Monster_1,
   Monster_2,
   Monster_3,
+  Monster_4,
+  Shield,
 }
 
 export enum AudioType {

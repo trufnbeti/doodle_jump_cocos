@@ -23,12 +23,14 @@ export default class Player extends PoolMember {
     private isTrampoline: boolean = false;
     private isSpringShoes: boolean = false;
     private isJumpOnMonster: boolean = false;
+    private isShield: boolean = false;
     @property(cc.BoxCollider) private boxCol: cc.BoxCollider;
 
     @property(cc.Node) private jetpack: cc.Node;
     @property(cc.Node) private propeller: cc.Node;
     @property(cc.Node) private springShoes: cc.Node;
     @property(cc.Node) private stars: cc.Node;
+    @property(cc.Node) private shield: cc.Node;
     private typeBoost: PoolType;
     private isEquipBooster: boolean = false;
     private isBoosting: boolean = false;
@@ -75,17 +77,23 @@ export default class Player extends PoolMember {
     public onReset(): void{
         this.node.x = 0;
         this.node.y = -550;
+        this.rb.linearVelocity = cc.Vec2.ZERO;
+
         this.isEquipBooster = false;
         this.isBoosting = false;
         this.isSpringShoes = false;
-        this.rb.linearVelocity = cc.Vec2.ZERO;
         this.isSprings = false;
         this.isTrampoline = false;
+        this.isShield = false;
+
         this.jumpTemp = this.jumpForce;
+
         this.jetpack.active = false;
         this.propeller.active = false;
         this.springShoes.active = false;
         this.stars.active = false;
+        this.shield.active = false;
+
         this.direction = 0;
         this.rb.gravityScale = 8;
         this.anim.stop();
@@ -179,6 +187,16 @@ export default class Player extends PoolMember {
         }, 10);
     }
 
+    public getShield(): void{
+        if (this.isBoosting) return;
+        this.shield.active = true;
+        this.isShield = true;
+        this.scheduleOnce(() => {
+            this.shield.active = false;
+            this.isShield = false;
+        }, 10);
+    }
+
     public jumpOnMonster(): void{
         this.isJumpOnMonster = true;
     }
@@ -217,7 +235,7 @@ export default class Player extends PoolMember {
     }
 
     public onHit(): void{
-        if (GameManager.Ins.state != GameState.Playing || this.isBoosting) return;
+        if (GameManager.Ins.state != GameState.Playing || this.isBoosting || this.isShield) return;
         this.rb.linearVelocity = cc.v2(0, 0);
         this.boxCol.enabled = false;
         this.stars.active = true;
