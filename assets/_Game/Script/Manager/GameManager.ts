@@ -8,6 +8,8 @@ import SimplePool from "../Pool/SimplePool";
 import Pref from "../Pref";
 import Utilities from "../Utilities";
 import UIManager from "./UIManager";
+import BlackHole from "../BlackHole";
+import GamepadController from "./GamepadController";
 
 const {ccclass, property} = cc._decorator;
 
@@ -42,12 +44,13 @@ export default class GameManager extends cc.Component {
 		this.clampVertical = new cc.Vec2(-0.5, 0.5).mul(this.screen.y);
         this.record.x = this.clampHorizon.y;
 
-        if (Pref.getHighestPos() != 0){
+        this.lastSpawnY = this.lastPlatformSpawned.node.y;
+
+        if (Pref.HighestPos != 0){
             this.record.active = true;
-            this.record.y = Pref.getHighestPos();
+            this.record.y = Pref.HighestPos;
         }
 
-    
     }
     @property(Player)   public player: Player;
     @property(Platform) public lastPlatformSpawned: Platform;
@@ -56,6 +59,7 @@ export default class GameManager extends cc.Component {
     @property(cc.Float) public maxYSpawnPos: number = 150;
     @property(cc.Float) private startingPlatform: number = 15;
     @property(Platforms)    public platformsPrefab: Platforms[] = [];
+    @property(cc.Float) private blackHoleRate: number = 0.1;
     @property(cc.Float) private itemsSpawnRate: number = 0.05;
     @property(Items)    private items: Items[] = [];
     @property(cc.Float) private monstersSpawnRate: number = 0.01;
@@ -64,6 +68,9 @@ export default class GameManager extends cc.Component {
     @property(cc.Node) private record: cc.Node;
 
     private isDoubleBreakablePlatform: boolean = false;
+    private isDoubleBlackHole: boolean = false;
+
+    private lastSpawnY: number = 0.1;
 
     private listPlatform: Platform[] = [];
 
@@ -76,17 +83,26 @@ export default class GameManager extends cc.Component {
         this.listPlatform.splice(0, this.listPlatform.length);
         
         this.lastPlatformSpawned = SimplePool.spawnT<Platform>(PoolType.Platform, cc.v3(0, -750, 0), 0);
-        this.lastPlatformSpawned.setId(0);
+        this.lastPlatformSpawned.Id = 0;
         this.lastPlatformSpawned.node.x = 0;
         this.lastPlatformSpawned.node.y = -750;
         this.lastPlatformSpawned.node.active = true;
+
+        this.lastSpawnY = this.lastPlatformSpawned.node.y;
+
         UIManager.Ins.updateScore(0);
+
+        this.isDoubleBreakablePlatform = false;
+        this.isDoubleBlackHole = false;
              
         this.camera.y = 0;
-        if (Pref.getHighestPos() != 0){
+        if (Pref.HighestPos != 0){
             this.record.active = true;
-            this.record.y = Pref.getHighestPos();
+            this.record.y = Pref.HighestPos;
         }
+
+        GamepadController.Ins.CanMoveLeft = false;
+        GamepadController.Ins.CanMoveRight = false;
 
         this.ivkPlatform();
     }
@@ -104,8 +120,22 @@ export default class GameManager extends cc.Component {
     public spawnPlatform(): void{
         let spawnPosX: number = Utilities.random(this.clampHorizon.x + this.xSpawnOffset, this.clampHorizon.y - this.xSpawnOffset);
         let distBetweenPlat: number = Utilities.random(this.minYSpawnPos, this.maxYSpawnPos);
-        let spawnPosY: number = this.lastPlatformSpawned.node.y + distBetweenPlat;
+        let spawnPosY: number = this.lastSpawnY + distBetweenPlat;
         let spawnPos: cc.Vec3 = new cc.Vec3(spawnPosX, spawnPosY, 0);
+        //===============================
+        const randBlackHole: number = Utilities.random(0, 1);
+        if (randBlackHole < this.blackHoleRate && this.m_score > 1000){
+            if (this.isDoubleBlackHole){
+                this.spawnPlatform();
+                return;
+            }
+            this.isDoubleBlackHole = true;
+            let blackHole = SimplePool.spawnT<BlackHole>(PoolType.BlackHole, this.node.getWorldPosition().add(spawnPos), 0);
+            this.lastSpawnY = blackHole.node.y;
+            return;       
+        }
+        this.isDoubleBlackHole = false;
+        //===============================
         let rand: number = Utilities.random(0, 1);
         let type: number = 0;
 
@@ -136,14 +166,15 @@ export default class GameManager extends cc.Component {
             platformClone.loadItem();
         }
 
-        platformClone.setId(this.lastPlatformSpawned.getId() + 1);
+        platformClone.Id = this.lastPlatformSpawned.Id + 1;
         this.lastPlatformSpawned = platformClone;
+        this.lastSpawnY = this.lastPlatformSpawned.node.y;
     }
     public addScore(value: number): void {
         if (this.state != GameState.Playing)    return;
         this.m_score += value;
         UIManager.Ins.updateScore(this.m_score);
-        Pref.setHighScore(this.m_score);
+        Pref.HighScore = this.m_score;
     }
 
     public spawnItem(spawnNode: cc.Node): Item{
@@ -189,9 +220,7 @@ export default class GameManager extends cc.Component {
 
     protected update(dt: number): void {
         if (this.state == GameState.Playing){
-            Pref.setHighestPos(this.player.node.y); 
-            // console.log(Pref.getHighestPos());
-            // console.log(this.record.y);            
+            Pref.HighestPos = this.player.node.y;
         }
         if (this.record.y < this.camera.y + this.clampVertical.x){
             this.record.active = false;

@@ -9,7 +9,8 @@
     "item",
     "player box",
     "booster",
-    "monster"
+    "monster",
+    "blackhole"
   ],
   "collision-matrix": [
     [
@@ -52,47 +53,49 @@
       true,
       null,
       null,
-      true
-    ],
-    [
-      false,
-      false,
-      true,
-      false,
-      false
-    ],
-    [
-      false,
-      false,
-      true,
-      false,
-      false,
-      false
-    ],
-    [
-      false,
-      true,
-      false,
-      true,
-      false,
-      false,
-      false
-    ],
-    [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
       true,
       true
     ],
     [
       false,
       false,
+      true,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ],
+    [
+      false,
+      false,
       false,
       false,
       false,
@@ -110,6 +113,19 @@
       false,
       false,
       true,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
       false,
       false
     ]
@@ -140,5 +156,5 @@
       "enable": false
     }
   },
-  "last-module-event-record-time": 1694071335388
+  "last-module-event-record-time": 1694775222560
 }

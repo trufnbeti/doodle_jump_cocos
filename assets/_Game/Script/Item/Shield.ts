@@ -10,7 +10,7 @@ const {ccclass, property} = cc._decorator;
 export default class Shield extends Item{
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
         if (other.node.group == 'player box'){
-            GameManager.Ins.player.getShield();           
+            GameManager.Ins.player.getShield(this);
         }
         
     }

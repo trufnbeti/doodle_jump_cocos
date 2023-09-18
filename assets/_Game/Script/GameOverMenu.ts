@@ -15,10 +15,18 @@ export default class GameOverMenu extends cc.Component{
     @property(cc.EditBox)
     private namePLayer: cc.EditBox;
 
+    private refreshData(): void{
+        this.score.string = `${GameManager.Ins.Score()}`;
+        this.highScore.string = `${Pref.HighScore}`;
+        this.namePLayer.string = Pref.PlayerName;
+    }
+
+    protected onEnable(): void {
+        this.refreshData();
+    }
+
     protected update(): void {
-        this.score.string = `your score: ${GameManager.Ins.Score()}`;
-        this.highScore.string = `your high score: ${Pref.getHighScore()}`;
-        this.namePLayer.string = Pref.getPlayerName();
+        this.refreshData();
     }
 
     private onBtnPlayagainCLick(): void{
@@ -33,6 +41,6 @@ export default class GameOverMenu extends cc.Component{
     }
 
     private getPlayerName(): void{
-        Pref.setPlayerName(this.namePLayer.textLabel.string);
+        Pref.PlayerName = this.namePLayer.textLabel.string;
     }
 }

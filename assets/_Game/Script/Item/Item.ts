@@ -14,7 +14,7 @@ export default class Item extends PoolMember{
     //     // console.log("hiohihihihi");
     // }
     public onDeath(): void{
-            SimplePool.despawn(this);   
+        SimplePool.despawn(this);   
     }
 
     public drop(): void{
