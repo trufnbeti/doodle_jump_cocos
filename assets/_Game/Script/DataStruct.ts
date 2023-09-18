@@ -26,6 +26,7 @@ export enum PoolType {
   Monster_3,
   Monster_4,
   Shield,
+  BlackHole,
 }
 
 export enum AudioType {
@@ -39,6 +40,7 @@ export enum AudioType {
   JumpOnMonster,
   MonsterHit,
   Falling,
+  BlackHole,
 }
 
 export enum PrefKey {
