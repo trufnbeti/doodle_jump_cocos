@@ -1,7 +1,9 @@
+import BlackHole from "./BlackHole";
 import { AudioType, Boosters, GameState, PoolType } from "./DataStruct";
 import Item from "./Item/Item";
 import Jetpack from "./Item/Jetpack";
 import GameManager from "./Manager/GameManager";
+import GamepadController from "./Manager/GamepadController";
 import SoundManager from "./Manager/SoundManager";
 import UIManager from "./Manager/UIManager";
 import PoolMember from "./Pool/PoolMember";
@@ -53,7 +55,6 @@ export default class Player extends PoolMember {
 			cc.view.getVisibleSize().height
 		);
 		this.clampHorizon = new cc.Vec2(-0.5, 0.5).mul(this.screen.x);
-
     }
 
     public equipBooster(booster: Item): void{
@@ -77,8 +78,10 @@ export default class Player extends PoolMember {
     public onReset(): void{
         this.node.x = 0;
         this.node.y = -550;
-        this.rb.linearVelocity = cc.Vec2.ZERO;
+        this.node.scale = 1;
 
+        this.rb.gravityScale = 8
+        
         this.isEquipBooster = false;
         this.isBoosting = false;
         this.isSpringShoes = false;
@@ -111,10 +114,11 @@ export default class Player extends PoolMember {
     }
 
     move(dt: number): void{
-        if (GameManager.Ins.state != GameState.Playing) return;
+        if (GameManager.Ins.state != GameState.Playing) return;        
         const newPos = this.node.position;
         this.direction = 0;
-        if (this.keys[37]){
+        
+        if (GamepadController.Ins.CanMoveLeft){
             this.direction = -1;
             newPos.x += this.moveSpeed * dt * this.direction;
             this.node.scaleX = -1;
@@ -122,7 +126,7 @@ export default class Player extends PoolMember {
                 newPos.x = this.clampHorizon.y;
             }
         }
-        if (this.keys[39]){
+        if (GamepadController.Ins.CanMoveRight){
             this.direction = 1;
             newPos.x += this.moveSpeed * dt * this.direction;
             this.node.scaleX = 1;
@@ -169,6 +173,22 @@ export default class Player extends PoolMember {
         }
         this.rb.linearVelocity = cc.v2(0, this.jumpTemp);       
     }
+
+    public suckInBlackHole(blackHole: BlackHole): void{
+        if (this.isBoosting)    return;
+        this.rb.gravityScale = 0;
+        this.node.angle = 0;
+        SoundManager.Ins.PlayClip(AudioType.BlackHole);
+        cc.tween(this.node)
+            .to(0.5, { position: blackHole.node.position, scaleX: 0, scaleY: 0 }, { easing: "linear" })
+            .call(() => {
+                UIManager.Ins.onOpen(1);
+                cc.director.pause();
+                
+            })
+            .start();
+    }
+
     public getSprings(): void{
         if (this.isSpringShoes) return;
         this.isSprings = true;
@@ -187,8 +207,9 @@ export default class Player extends PoolMember {
         }, 10);
     }
 
-    public getShield(): void{
-        if (this.isBoosting) return;
+    public getShield(shield: Item): void{
+        if (this.isBoosting || this.isShield) return;
+        SimplePool.despawn(shield);
         this.shield.active = true;
         this.isShield = true;
         this.scheduleOnce(() => {
@@ -218,6 +239,9 @@ export default class Player extends PoolMember {
         }
     }
     private boosting(): void{
+        this.springShoes.active = false;
+        this.isSpringShoes = false;
+        this.node.angle = 0;
         this.rb.gravityScale = 0;
         this.rb.linearVelocity = cc.v2(0, this.jumpForce * 1.5);
         this.isBoosting = true;

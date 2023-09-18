@@ -66,7 +66,10 @@ export default class UIManager extends cc.Component{
         for(let i = 0; i < this.canvas.length; i++)
             this.onClose(i);
     }
-    private onBtnPauseClick(): void{
+    private onBtnPauseClick(event: Event, CustomEventData): void{
+        console.log(event);
+        console.log(CustomEventData);
+        
         this.onOpen(0);
         SoundManager.Ins.PauseAllSound();
         cc.director.pause();

@@ -33,12 +33,14 @@ export default class Platform extends PoolMember{
 
     private m_id: number = 0;
 
-    public getId(): number{
+    public get Id(): number{
         return this.m_id;
     }
-    public setId(value: number): void{
+
+    public set Id(value: number){
         this.m_id = value;
     }
+    
     protected onCollisionEnter(other: cc.Collider, self: cc.Collider): void{
         switch(other.node.group){
             case 'player':
